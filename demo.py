@@ -49,39 +49,39 @@ st.dataframe(st.session_state["filtered_df"].style.apply(highlight_status, axis=
 with st.expander("Ajouter une demande GRD à traiter"):
     with st.form("add_row_form"):
         new_row = {}
-        options_offre = ["Base", "EP", "HPHC"]  # Valeurs possibles pour Offre
-        options_groupement = [
-            'CAPB - ASST S4','CAPB - ZAE',
-            'CAPB - BATI - SECTEUR 1 - TTC',
-            'CAPB - AEP S4',
-            'CAPB - ASST S7',
-            'CAPB - BATI - SECTEUR 2 - TTC',
-            'CAPB - ASST S6',
-            'CAPB - ASST S2',
-            'CAPB - AEP S7',
-            'CAPB - AEP S6',
-            'CAPB - PLUVIAL S2',
-            'CAPB - AEP S2',
-            'CAPB - MOBI',
-            'CAPB - BATI - SECTEUR 4 - TTC',
-            'CAPB - BATI - SECTEUR 3 - TTC',
-            'CAPB - OM - SECTEUR EST',
-            'CAPB - ABATTOIRS - HT',
-            'CAPB - GDV',
-            'CAPB - OM - SECTEUR OUEST',
-            'CAPB - BDL',
-            'CAPB - AEP GEST DEL TDD TVA S3',
-            'CAPB - PORT',
-            'CAPB - ASST GEST DEL TDD TVA S3',
-            'CAPB - ASST S1']  # Exemple de valeurs possibles pour Groupement, à aller cherche dans la base pour plus tard ?
-        
+        select_dict = {
+            'OFFRE': ["Base", "EP", "HPHC"],
+            'Regroupement': sorted([
+                'CAPB - ASST S4','CAPB - ZAE',
+                'CAPB - BATI - SECTEUR 1 - TTC',
+                'CAPB - AEP S4',
+                'CAPB - ASST S7',
+                'CAPB - BATI - SECTEUR 2 - TTC',
+                'CAPB - ASST S6',
+                'CAPB - ASST S2',
+                'CAPB - AEP S7',
+                'CAPB - AEP S6',
+                'CAPB - PLUVIAL S2',
+                'CAPB - AEP S2',
+                'CAPB - MOBI',
+                'CAPB - BATI - SECTEUR 4 - TTC',
+                'CAPB - BATI - SECTEUR 3 - TTC',
+                'CAPB - OM - SECTEUR EST',
+                'CAPB - ABATTOIRS - HT',
+                'CAPB - GDV',
+                'CAPB - OM - SECTEUR OUEST',
+                'CAPB - BDL',
+                'CAPB - AEP GEST DEL TDD TVA S3',
+                'CAPB - PORT',
+                'CAPB - ASST GEST DEL TDD TVA S3',
+                'CAPB - ASST S1']),
+            'FTA': ['CU4' , 'MU4', 'LU'],
+        }
         for column in st.session_state["df"].columns:
             if column in ["Date début de fourniture", "Date fin de fourniture"]:
                 new_row[column] = st.date_input(f"Valeur pour {column}", value=pd.to_datetime("today"))
-            elif column == "OFFRE":
-                new_row[column] = st.selectbox(f"Valeur pour {column}", options_offre)
-            elif column == "Regroupement":
-                new_row[column] = st.selectbox(f"Valeur pour {column}", options_groupement)
+            elif column in select_dict:
+                new_row[column] = st.selectbox(f"Valeur pour {column}", select_dict[column])
             elif column not in ["Statut"]:
                 new_row[column] = st.text_input(f"Valeur pour {column}", "")
         new_row["Statut"] = "Demande GRD à traiter"
