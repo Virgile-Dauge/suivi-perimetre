@@ -2,35 +2,6 @@ import streamlit as st
 import pandas as pd
 import io
 
-# Charger les données initiales
-# data = {
-#     "PRM": [],
-#     "Nom du site": [],
-#     "Segment": [],
-#     "FTA": [],
-#     "OFFRE": [],
-#     "PS": [],
-#     "POINTE": [],
-#     "HPH": [],
-#     "HCH": [],
-#     "HPB": [],
-#     "HCB": [],
-#     "Date début de fourniture": [],
-#     "Date fin de fourniture": [],
-#     "Regroupement": [],
-#     "Moyen de paiement": [],
-#     "Numéro d'engagement Chorus": [],
-#     "Code Service Chorus": [],
-#     "Numéro SIRET": [],
-#     "Contact": [],
-#     "Téléphone": [],
-#     "Adresse email": [],
-#     "Branchement provisoire": [],
-#     "Commentaire": [],
-#     "Statut": [],
-# }
-# df = pd.DataFrame(data)
-
 # Fonction pour appliquer les couleurs en fonction du statut
 def highlight_status(row):
     if row["Statut"] == "Réalisé":
@@ -47,6 +18,7 @@ st.title("Suivi des demandes GRD")
 
 # Initialisation de la session
 if "df" not in st.session_state:
+    # TODO remplacer avec la connexion a la DB
     st.session_state["df"] = pd.read_csv('base.csv')
 if "filtered_df" not in st.session_state:
     st.session_state["filtered_df"] = st.session_state["df"].copy()
@@ -77,8 +49,40 @@ st.dataframe(st.session_state["filtered_df"].style.apply(highlight_status, axis=
 with st.expander("Ajouter une demande GRD à traiter"):
     with st.form("add_row_form"):
         new_row = {}
+        options_offre = ["Base", "EP", "HPHC"]  # Valeurs possibles pour Offre
+        options_groupement = [
+            'CAPB - ASST S4','CAPB - ZAE',
+            'CAPB - BATI - SECTEUR 1 - TTC',
+            'CAPB - AEP S4',
+            'CAPB - ASST S7',
+            'CAPB - BATI - SECTEUR 2 - TTC',
+            'CAPB - ASST S6',
+            'CAPB - ASST S2',
+            'CAPB - AEP S7',
+            'CAPB - AEP S6',
+            'CAPB - PLUVIAL S2',
+            'CAPB - AEP S2',
+            'CAPB - MOBI',
+            'CAPB - BATI - SECTEUR 4 - TTC',
+            'CAPB - BATI - SECTEUR 3 - TTC',
+            'CAPB - OM - SECTEUR EST',
+            'CAPB - ABATTOIRS - HT',
+            'CAPB - GDV',
+            'CAPB - OM - SECTEUR OUEST',
+            'CAPB - BDL',
+            'CAPB - AEP GEST DEL TDD TVA S3',
+            'CAPB - PORT',
+            'CAPB - ASST GEST DEL TDD TVA S3',
+            'CAPB - ASST S1']  # Exemple de valeurs possibles pour Groupement, à aller cherche dans la base pour plus tard ?
+        
         for column in st.session_state["df"].columns:
-            if column not in ["Statut"]:
+            if column in ["Date début de fourniture", "Date fin de fourniture"]:
+                new_row[column] = st.date_input(f"Valeur pour {column}", value=pd.to_datetime("today"))
+            elif column == "OFFRE":
+                new_row[column] = st.selectbox(f"Valeur pour {column}", options_offre)
+            elif column == "Regroupement":
+                new_row[column] = st.selectbox(f"Valeur pour {column}", options_groupement)
+            elif column not in ["Statut"]:
                 new_row[column] = st.text_input(f"Valeur pour {column}", "")
         new_row["Statut"] = "Demande GRD à traiter"
         submitted = st.form_submit_button("Ajouter")
