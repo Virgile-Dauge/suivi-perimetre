@@ -15,7 +15,7 @@ def highlight_status(row):
 
 # Titre de l'application
 st.title("Suivi des demandes GRD")
-st.logo("ENARGIA_Logo.png", size='large')
+st.logo("logo.png", size='large')
 # Initialisation de la session
 if "df" not in st.session_state:
     # TODO remplacer avec la connexion a la DB
